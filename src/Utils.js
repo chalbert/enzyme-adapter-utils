@@ -5,6 +5,7 @@ import createMountWrapper from './createMountWrapper';
 import createRenderWrapper from './createRenderWrapper';
 import wrap from './wrapWithSimpleWrapper';
 import RootFinder from './RootFinder';
+import { HostComponent } from './tagCodes';
 
 export { createMountWrapper, createRenderWrapper, wrap, RootFinder };
 
@@ -451,4 +452,24 @@ export function spyProperty(instance, propertyName, handlers = {}) {
       return wasAssigned;
     },
   };
+}
+
+export function getPublicRootInstance(container) {
+  var containerFiber = container._internalRoot.current;
+
+  if (!containerFiber.child) {
+    return null;
+  }
+
+  switch (containerFiber.child.tag) {
+    case HostComponent:
+      return getPublicInstance(containerFiber.child.stateNode);
+
+    default:
+      return containerFiber.child.stateNode;
+  }
+}
+
+function getPublicInstance(instance) {
+  return instance;
 }
